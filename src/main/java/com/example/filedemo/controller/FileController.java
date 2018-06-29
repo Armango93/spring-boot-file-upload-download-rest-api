@@ -44,8 +44,8 @@ public class FileController {
         List<String> list = new ArrayList<>();
         boolean isBracketsOk = false;
         try {
-            isBracketsOk = analizerFileService.testBrackets("uploads\\" + fileName);
-            list = analizerFileService.readFile("uploads\\" + fileName);
+            isBracketsOk = analizerFileService.testBrackets("uploads/" + fileName);
+            list = analizerFileService.readFile("uploads/" + fileName);
         } catch (IOException e) {
             e.printStackTrace();
         }
