@@ -1,6 +1,7 @@
 package com.example.filedemo.controller;
 
 import com.example.filedemo.payload.UploadFileResponse;
+import com.example.filedemo.service.AnalizerFileService;
 import com.example.filedemo.service.FileStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +29,9 @@ public class FileController {
     @Autowired
     private FileStorageService fileStorageService;
 
+    @Autowired
+    private AnalizerFileService analizerFileService;
+
     @PostMapping("/uploadFile")
     public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) {
         String fileName = fileStorageService.storeFile(file);
@@ -36,8 +41,17 @@ public class FileController {
                 .path(fileName)
                 .toUriString();
 
+        List<String> list = new ArrayList<>();
+        boolean isBracketsOk = false;
+        try {
+            isBracketsOk = analizerFileService.testBrackets("uploads\\" + fileName);
+            list = analizerFileService.readFile("uploads\\" + fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return new UploadFileResponse(fileName, fileDownloadUri,
-                file.getContentType(), file.getSize());
+                file.getContentType(), file.getSize(), list, isBracketsOk);
     }
 
     @PostMapping("/uploadMultipleFiles")
